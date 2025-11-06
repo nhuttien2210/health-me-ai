@@ -29,4 +29,4 @@ npm run preview
 ```
 
 ## 🚀 Live Demo
-https://healthy-me-ai.vercel.app/
+https://health-me-ai.vercel.app/
