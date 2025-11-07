@@ -2,8 +2,10 @@ import regexs from "@/constants/regexs";
 import type { DataCollect } from "@/models/data-collect";
 import useHealthReportStore from "@/stores/useHealthReportStore";
 import { CloseCircleOutlined, ExclamationCircleOutlined, FormOutlined } from "@ant-design/icons";
-import { Button, Flex, Form, Input, InputNumber, Modal, notification } from "antd";
+import { Button, Flex, Form, Input, InputNumber, Modal, notification, Progress } from "antd";
 import React, { memo, useState } from "react";
+
+let interval: ReturnType<typeof setInterval>;
 
 const CollectDataForm: React.FC = () => {
   const [form] = Form.useForm<DataCollect>();
@@ -12,10 +14,30 @@ const CollectDataForm: React.FC = () => {
   const loading = useHealthReportStore((state) => state.loading);
   const collectedData = useHealthReportStore((state) => state.collectedData);
   const [open, setOpen] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const weight = Form.useWatch('weight', form);
 
+  const handleProgress = () => {
+    let progress = 0;
+    interval = setInterval(() => {
+      if(progress < 90){
+        progress += 1;
+        setProgress(progress);
+      }
+    }, 500);
+  };
+
+  const handleCancelProgress = () => {
+    clearInterval(interval);
+    setProgress(0);
+  };
+
   const onFinish = async (values: DataCollect) => {
+    notification.info({
+      message: 'Generating report, estimated time 30s to 3min',
+    });
+    handleProgress();
     try {
       await onGenerateReport(values);
       setOpen(false);
@@ -26,6 +48,8 @@ const CollectDataForm: React.FC = () => {
       notification.warning({
         message: error?.message || 'Unknown Gemini error',
       });
+    }finally{
+      handleCancelProgress();
     }
   };
 
@@ -143,6 +167,7 @@ const CollectDataForm: React.FC = () => {
             {loading ? 'Generating report' : 'Generate report'}
           </Button>
         </Flex>
+        {!!progress && <Progress percent={progress} />}
       </Form.Item>
 
       <Modal
