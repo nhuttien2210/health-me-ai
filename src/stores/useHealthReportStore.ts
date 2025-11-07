@@ -19,7 +19,7 @@ type HealthReportStoreActions = {
     clearReport: () => void
 }
 
-let abortController: AbortController;
+const abortControllers: Record<string, AbortController> = {};
 
 const useHealthReportStore = create<HealthReportStoreStates & HealthReportStoreActions>((set) => {
     return {
@@ -30,7 +30,7 @@ const useHealthReportStore = create<HealthReportStoreStates & HealthReportStoreA
 
         //actions
         onGenerateReport: async (data) => {
-            abortController = new AbortController();
+            abortControllers[ENDPOINTS['GEMINI_2.5_FLASH']] = new AbortController();
             try {
                 set({ collectedData: data })
                 set({ loading: true })
@@ -48,7 +48,7 @@ const useHealthReportStore = create<HealthReportStoreStates & HealthReportStoreA
                             }
                         ]
                     },
-                    signal: abortController.signal
+                    signal: abortControllers[ENDPOINTS['GEMINI_2.5_FLASH']].signal
                 })
                 set({ healthReport: cleanJSONParse(response.candidates[0].content.parts[0].text) })
             } catch (error) {
@@ -58,7 +58,8 @@ const useHealthReportStore = create<HealthReportStoreStates & HealthReportStoreA
             }
         },
         onCancelReport: () => {
-            abortController.abort(new Error('Canceled report generation'));
+            abortControllers[ENDPOINTS['GEMINI_2.5_FLASH']].abort(new Error('Canceled report generation'));
+            delete abortControllers[ENDPOINTS['GEMINI_2.5_FLASH']];
         },
         clearReport: () => {
             set({ healthReport: undefined })
