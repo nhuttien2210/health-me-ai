@@ -13,7 +13,7 @@ const PieChart = forwardRef<HTMLDivElement, PieChartProps>(({
   data,
   angleField,
   colorField,
-  height = 250,
+  height = 300,
   ...rest
 }, ref) => {
   const { token } = theme.useToken(); 
@@ -49,6 +49,9 @@ const PieChart = forwardRef<HTMLDivElement, PieChartProps>(({
         title: false,
         position: 'bottom',
         rowPadding: 5,
+        layout: {
+          justifyContent: 'center',
+        },
       },
     },
     tooltip: false,

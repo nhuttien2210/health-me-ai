@@ -1,6 +1,7 @@
 import regexs from "@/constants/regexs";
 import type { DataCollect } from "@/models/data-collect";
 import useHealthReportStore from "@/stores/useHealthReportStore";
+import errorResponseNotifi from "@/utils/error-response-notifi";
 import { CloseCircleOutlined, ExclamationCircleOutlined, FormOutlined } from "@ant-design/icons";
 import { Button, Flex, Form, Input, InputNumber, Modal, notification, Progress } from "antd";
 import React, { memo, useState } from "react";
@@ -44,10 +45,8 @@ const CollectDataForm: React.FC = () => {
       notification.success({
         message: 'Report generated successfully',
       });
-    } catch (error: any) {
-      notification.warning({
-        message: error?.message || 'Unknown Gemini error',
-      });
+    } catch (error) {
+      errorResponseNotifi(error);
     }finally{
       handleCancelProgress();
     }

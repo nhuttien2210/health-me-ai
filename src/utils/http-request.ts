@@ -23,9 +23,8 @@ export async function httpRequest<Resp = unknown, Body = BodyInit>({ url, method
         })
 
         const data = await response.json().catch(() => ({}));
-
         if (!response.ok) {
-            throw { response, data }
+            throw { response, data: data?.error }
         }
         return data;
 

@@ -56,7 +56,6 @@ const DownloadPDFButton = forwardRef<HTMLButtonElement, DownloadPDFButtonProps>(
             type="default"
             icon={<DownloadOutlined />}
             onClick={handleDownload}
-            block
         >
             Download as PDF
         </Button>

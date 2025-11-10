@@ -75,64 +75,28 @@ const sample = {
 }
 
 export const createHealthReportPrompt = ({
-    name,
-    age,
-    height,
-    weight,
-    goalWeight,
-    exerciseTime,
+  name,
+  age,
+  height,
+  weight,
+  goalWeight,
+  exerciseTime,
 }: DataCollect) => {
-    return `
-    You are a fitness and nutrition assistant.
+  // Sử dụng template literal với cấu trúc chặt chẽ hơn để giảm ký tự thừa
+  return `
+TASK: GENERATE HEALTH REPORT JSON. Output ONLY a valid JSON object.
+You are an expert fitness AI. Adhere strictly to the data and rules below.
 
-Given the following user input:
-- Name: ${name}
-- Age: ${age}
-- Height (cm): ${height}
-- Current Weight (kg): ${weight}
-- Goal Weight (kg): ${goalWeight}
-- Time per Day for Exercise (minutes): ${exerciseTime}
+INPUT: Name: ${name}, Age: ${age}, Ht(cm): ${height}, Wt(kg): ${weight}, GoalWt(kg): ${goalWeight}, ExerciseTime(min): ${exerciseTime}
 
----
+CONSTRAINTS & CALCULATION RULES:
+1. BMI: currentWeight / ((height / 100)^2). Round to 1 decimal. Categories: Underweight (<18.5), Normal (18.5–24.9), Overweight (25–29.9), Obese (≥30).
+2. WeeksToGoal: CEILING((currentWeight - goalWeight) / 0.75). Use 0.75 kg/week loss rate.
+3. Exercise Calories: Use 8 kcal/min for cardio, 6 kcal/min for strength, 4 kcal/min for yoga. Total exercise time must use 'ExerciseTime(min)'.
+4. Nutrition: Daily Calories = TDEE * 0.8 (20% deficit). Macros MUST be Protein 30%, Carbs 45%, Fat 25%.
+5. Data Consistency: All percentage arrays (macros, bodyComposition, activityComposition) must sum to 100%. 'weightProgress' must show consistent, gradual decrease from 'Wt(kg)' at week 0 to 'GoalWt(kg)' at 'WeeksToGoal'.
 
-🎯 Task:
-Generate a realistic, personalized **health report JSON** that helps the user reach their goal weight.  
-The report must include calculations for BMI, weight loss timeline, exercise plan, and nutrition breakdown.
-
----
-
-🧮 Calculations required:
-1. **BMI** = currentWeight / ((height / 100) ^ 2)
-   - Round to 1 decimal.
-   - Categorize as:  
-     "Underweight" (<18.5), "Normal" (18.5–24.9), "Overweight" (25–29.9), or "Obese" (≥30)
-
-2. **Estimated weeks to goal**
-   - Assume a healthy weight loss rate of 0.5–1 kg/week.
-   - Calculate total weight loss = currentWeight - goalWeight
-   - Estimate goalWeeks = totalLoss / 0.75 (average 0.75 kg/week)
-   - Round up to nearest whole week.
-
-3. **Calories burned estimate**
-   - Assume 8 kcal/min for cardio, 6 kcal/min for strength, 4 kcal/min for yoga/stretching.
-   - Use exerciseTime to assign realistic durations.
-
-4. **Nutrition**
-   - Recommend 20–25% calorie deficit (dailyCalories = TDEE × 0.8)
-   - Macros split: Protein 30%, Carbs 45%, Fat 25%
-
----
-
-🧱 Output format (must be valid JSON):
-
+OUTPUT FORMAT EXAMPLE (STRICTLY USE THIS STRUCTURE):
 ${JSON.stringify(sample)}
-
----
-
-⚠️ Rules:
-- All numeric values must be realistic and consistent.
-- Weight must gradually decrease each week toward the goal.
-- Percentages in charts must sum to 100%.
-- Output **ONLY** valid JSON, no extra commentary.
-    `;
+`;
 };

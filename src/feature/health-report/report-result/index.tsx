@@ -1,14 +1,17 @@
+import DownloadPdfButton from "@/components/download-pdf-button";
 import LineChart from "@/components/line-chart";
 import PieChart from "@/components/pie-chart";
+import useWindowSize from "@/hooks/useWindowSize";
 import useHealthReportStore from "@/stores/useHealthReportStore";
-import { Col, Progress, Row, Table, Typography } from "antd";
+import { Col, Divider, Progress, Row, Table, theme, Typography } from "antd";
 import { memo, useMemo } from "react";
 import { exerciseCalendarColumns } from "./utils";
-import DownloadPdfButton from "@/components/download-pdf-button";
 
 const { Text, Title } = Typography;
 
 const HealthReport: React.FC = () => {
+    const { size } = useWindowSize();
+    const {token} = theme.useToken();
     const healthReport = useHealthReportStore((state) => state.healthReport);
 
     const summary = useMemo(() => healthReport?.summary, [healthReport?.summary]);
@@ -22,7 +25,7 @@ const HealthReport: React.FC = () => {
     const nutritionBreakdown = useMemo(() => healthReport?.charts?.nutritionBreakdown, [healthReport?.charts?.nutritionBreakdown]);
     const bodyComposition = useMemo(() => healthReport?.charts?.bodyComposition, [healthReport?.charts?.bodyComposition]);
     const activityComposition = useMemo(() => healthReport?.charts?.activityComposition, [healthReport?.charts?.activityComposition]);
-
+    
     return (
         <>
             <Row gutter={[32, 16]}  id="report-result">
@@ -50,24 +53,27 @@ const HealthReport: React.FC = () => {
                             <Text>{summary?.healthSummary}</Text>
                         </Col>
                     </Row>
+                    <Divider />
 
                     {/* Exercise Calendar */}
-                    <Row style={{ marginTop: 16 }}>
+                    <Row>
                         <Title level={5}>Exercise Calendar</Title>
                         <Col span={24}>
                             <Table bordered size="small" rowKey={'day'} pagination={false} columns={exerciseCalendarColumns} dataSource={exerciseCalendar} />
                         </Col>
                     </Row>
+                    <Divider  />
 
                     {/* Timeline */}
-                    <Row style={{ marginTop: 16 }}>
+                    <Row>
                         <Title level={5}>Timeline</Title>
                         <Progress percent={timeline?.currentProgress || 0} showInfo={false} />
                         <Text>{timeline?.message}</Text>
                     </Row>
+                    <Divider />
 
                     {/* Activity Composition */}
-                    <Row style={{ marginTop: 16 }}>
+                    <Row>
                         <Title level={5}>Activity Composition</Title>
                         <Col span={24}>
                             <PieChart
@@ -83,17 +89,23 @@ const HealthReport: React.FC = () => {
                             />
                         </Col>
                     </Row>
+                    {size.width <= token.screenLG && <Divider />}
                 </Col>
 
                 <Col lg={12} md={24} xs={24}>
 
                     {/* Weight progress */}
-                    <Title level={5}>Weight progress</Title>
-                    <LineChart data={weightProgress?.progressData || []} xField="week" yField="weight" />
-                    <Text style={{ textAlign: 'center', display: 'block' }}><Text strong>Goal weeks:</Text> {weightProgress?.goalWeeks}</Text>
+                    <Row>
+                        <Col span={24}>
+                            <Title level={5}>Weight progress</Title>
+                            <LineChart data={weightProgress?.progressData || []} xField="week" yField="weight" />
+                            <Text style={{ textAlign: 'center', display: 'block' }}><Text strong>Goal weeks:</Text> {weightProgress?.goalWeeks}</Text>
+                        </Col>
+                    </Row>
+                    <Divider />
 
                     {/* Exercise Effort */}
-                    <Row style={{ marginTop: 16 }}>
+                    <Row>
                         <Title level={5}>Exercise Effort</Title>
                         <Col span={24}>
                             <LineChart
@@ -105,9 +117,10 @@ const HealthReport: React.FC = () => {
                             />
                         </Col>
                     </Row>
+                    <Divider />
 
                     {/* Nutrition Breakdown */}
-                    <Row style={{ marginTop: 16 }}>
+                    <Row>
                         <Title level={5}>Nutrition Breakdown</Title>
                         <Col span={24}>
                             <PieChart
@@ -123,9 +136,10 @@ const HealthReport: React.FC = () => {
                             />
                         </Col>
                     </Row>
+                    <Divider />
 
                     {/* Body Composition */}
-                    <Row style={{ marginTop: 16 }}>
+                    <Row>
                         <Title level={5}>Body Composition</Title>
                         <Col span={24}>
                             <PieChart
@@ -143,6 +157,7 @@ const HealthReport: React.FC = () => {
                     </Row>
                 </Col>
             </Row>
+            <Divider />
             <DownloadPdfButton targetId="report-result" />
         </>
     )

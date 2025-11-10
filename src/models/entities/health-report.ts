@@ -1,3 +1,8 @@
+import type { HttpErrorResponse } from "../http-response"
+import type { GeminiErrorResponse } from "../gemini-http"
+
+export type HealhReportErrorResponse = HttpErrorResponse<GeminiErrorResponse>
+
 export type HealthReport = {
   summary: Summary
   exerciseCalendar: ExerciseCalendar[]

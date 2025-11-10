@@ -29,7 +29,7 @@ const HealthReport: React.FC = () => {
         </Flex>
       }
       style={{
-        maxWidth: 720,
+        maxWidth: !healthReport ? 720 : 1280,
         margin: "auto",
         boxShadow: token.boxShadowSecondary,
         borderRadius: token.borderRadiusLG,

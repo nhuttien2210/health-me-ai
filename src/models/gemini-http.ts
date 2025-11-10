@@ -1,3 +1,10 @@
+export type GeminiErrorResponse = {
+    code: number,
+    message: string,
+    status: string,
+    details: Array<unknown>
+}
+
 export type GeminiGeneratorPayload = {
     contents: Pick<Content, 'parts'>[]
 }
